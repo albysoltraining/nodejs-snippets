@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>List of Items</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    /* Additional CSS for grid layout */
+    .item {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <div class="row" id="itemContainer">
+      <!-- Items will be dynamically added here -->
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    // Fetch data from server
+    function loadData() {
+        fetch('data')
+            .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('itemContainer');
+            container.innerHTML = '';
+            // If data is empty or null
+            if (!data || data.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<div colspan=6> No records found</div>';
+                container.insertAdjacentHTML('beforeend', itemHtml);
+                return;
+            }
+
+            // Iterate over items and generate HTML
+            data.forEach(item => {
+                var itemHtml = `
+                <div class="col-md-4">
+                    <div class="item">
+                    <h4>${item.name}</h4>
+                    <p>Age: ${item.age}</p>
+                    </div>
+                </div>`;
+                container.insertAdjacentHTML('beforeend', itemHtml);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    }
+
+    loadData();
+
+  </script>
+</body>
+</html>
