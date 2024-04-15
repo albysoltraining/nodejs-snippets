@@ -1,11 +1,14 @@
 const sql = require('mysql2');
+const env = require('dotenv');
+
+env.config();
 
 const con = sql.createConnection(
     {
-        host: 'localhost',
-        user: 'root',
-        password: 'root',
-        database: 'studentdb'
+        host: process.env.host,
+        user: process.env.user,
+        password: process.env.password,
+        database: process.env.database
     }
 );
 
@@ -106,14 +109,9 @@ function findUser(name, pwd, callback) {
     });
 }
 
-// createDatabase();
-// createTable();
-// saveData('Ramu', 23);
-// getData();
-
 module.exports = {
     getStudents,
     saveStudent,
     deleteStudent,
-    valicateUser: findUser
+    validateUser: findUser
 }
