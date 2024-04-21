@@ -3,7 +3,8 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 
-const dbService = require('./db-service.js')
+const dbService = require('./db-service.js');
+const validator = require('./input-validator.js');
 
 const app = express();
 const PORT = 3002;
@@ -63,6 +64,14 @@ app.get('/students', (req, res) => {
     res.sendFile(path.join(__dirname, 'html', 'students.html'));
 });
 
+app.get('/login2', (req, res) => {
+    res.sendStatus(200);
+});
+
+app.post('/login2', (req, res) => {
+    res.sendStatus(200);
+});
+
 // Registration page
 app.get('/register', (req, res) => {
     if (!req.session.authenticated) {
@@ -76,6 +85,10 @@ app.get('/login-fail', (req, res) => {
     res.sendFile(path.join(__dirname, 'html', 'login-error.html'));
 });
 
+app.get('/register-error', (req, res) => {
+    res.sendFile(path.join(__dirname, 'html', 'register-error.html'));
+});
+
 // Registration endpoint
 app.post('/register', (req, res) => {
     if (!req.session.authenticated) {
@@ -84,13 +97,18 @@ app.post('/register', (req, res) => {
     }
     const student = { firstName, lastName, email, dob, gender, address } = req.body;
 
-    dbService.saveStudent(student, (isValid) => { 
-        if (isValid) {
-            res.redirect('/students');
-        } else {
-            res.redirect('/login-fail');
-        }
-    });
+    if (validator.isValidDate(dob)) {
+        dbService.saveStudent(student, (isValid) => { 
+            if (isValid) {
+                res.redirect('/students');
+            } else {
+                res.redirect('/register-error');
+            }
+        });
+    }
+    else {
+        res.redirect('/register-error');
+    }
 });
 
 // Delete studenta student record by ID
@@ -111,3 +129,5 @@ app.delete('/students/:id', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+module.exports = app; // Export app for testing
